@@ -1,6 +1,5 @@
 import os
 import sys
-from dotenv import load_dotenv
 
 
 # Try to import the optional langchain client. If it's not available,
@@ -43,12 +42,48 @@ class CodingAgent:
         self.llm = ChatOpenAI(model=model_name)
 
         # Write your agent implementation here
+        # Minimal, test-driven agent behavior implemented below via methods
+
+    # --- Agent helpers -------------------------------------------------
+    def discover_projects(self):
+        """Return a list of project directories under `projects/`."""
+        root = os.path.join(os.path.dirname(__file__), "projects")
+        if not os.path.isdir(root):
+            return []
+        return [os.path.join(root, name) for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]
+
+    def has_tests(self, project_path: str) -> bool:
+        return os.path.isdir(os.path.join(project_path, "tests"))
+
+    def run_pytest(self, project_path: str) -> dict:
+        """Run pytest in the project directory and return a small report."""
+        import subprocess
+
+        cmd = [sys.executable, "-m", "pytest", "-q"]
+        try:
+            proc = subprocess.run(cmd, cwd=project_path, capture_output=True, text=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            return {"returncode": 124, "output": "timeout"}
+
+        out = (proc.stdout or "") + (proc.stderr or "")
+        lines = out.strip().splitlines()
+        return {"returncode": proc.returncode, "output_lines": lines[-20:]}
+
+    def analyze(self) -> dict:
+        """Analyze projects: run tests when present and return results as a dict."""
+        results = {}
+        for proj in self.discover_projects():
+            name = os.path.basename(proj)
+            info = {"path": proj, "has_tests": False, "tests": None}
+            if self.has_tests(proj):
+                info["has_tests"] = True
+                info["tests"] = self.run_pytest(proj)
+            results[name] = info
+        return {"projects": results}
 
 
 if __name__ == "__main__":
     import argparse
-
-    load_dotenv()
 
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("--dry-run", action="store_true", help="Run without OpenAI credentials for demo/testing")
