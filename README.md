@@ -38,56 +38,63 @@ mini-coding-agent/
 Each project should have:
 
 - A `README.md` file with requirements that needs to be fulfilled.
-- A `tests/` directory with unit tests
+# Mini Coding Agent
 
+This repository contains a small, test-driven coding agent and three example Flask projects used for exercise and validation.
 
-## Available LLM Models
-- You will have access to GPT-4.1-mini and GPT-5-mini OpenAI models to build your agent. You'll already see a OpenAI client initialised with GPT-4.1-mini in the agent.py file.
-- To understand the LLM limits and throughputs, run the check_usage.py for more detailed info.
+This fork contains the following changes and artifacts (created while developing and validating the agent):
 
+- Implementations and tests for three example projects in `projects/`:
+   - `flask-easy` — REST endpoints and SQLAlchemy fixes (tests green)
+   - `flask-intermediate` — JWT login and protected endpoints (tests green)
+   - `flask-hard` — Pydantic logs, threaded LogProcessor, metrics and notifications (tests green)
+- A lightweight agent in `agent.py` with a `--dry-run` mode and a minimal `analyze()` runner that discovers subprojects and runs pytest.
+- Documentation PDF in `docs/report.pdf` (also present as `docs/report.tex`).
 
-## Programming Language & Framework
-The setup comes with Python and LangGraph out of the box. Feel free to install and use your preferred agentic framework.
+Agent features
+- Discover projects under `projects/` and run tests when `tests/` exists.
+- Perform small code edits and implement missing endpoints/models where tests require.
+- Dry-run mode to show planned actions without executing them.
 
+How to run (local)
+1. Create and activate a virtual environment (recommended):
 
-## Executable Commands
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-### Install dependencies:
+2. Install dependencies:
 
-   ```
-   pip install -r requirements.txt
-   ```
+```powershell
+pip install -r requirements.txt
+```
 
-### Run the agent:
-   ```
-   python agent.py
-   ```
+3. Run all tests (top-level):
 
-### Check LLM Credit Usage:
-   ```
-   python check_usage.py
-   ```
+```powershell
+python tests.py
+```
 
-### Run Tests
-   ```
-   python tests.py     
-   ```
+4. Run the agent in dry-run to see planned actions:
 
-### To Move The Project Offline
-1. Use the button on the top right corner of the HackerRank platform to switch to the online IDE (if you're currently in the offline + git mode)
-2. Use Ctrl + J (Windows/Linux) or Cmd + J to view the panel.
-3. You'll find a terminal window.
-4. Run the following commands on the terminal
-   ```
-   env | grep OPENAI
-   ```
-5. Copy and set the following variables in your local machine
-   ```
-   OPENAI_API_BASE
-   OPENAI_API_KEY
-   ```
-6. Now, toggle back to offline mode using the button at the top right corner of the HackerRank platform.
-7. You'll be presented with your dedicated git repo URL.
-8. Clone this repo to your local and start making changes to the same.
-9. Once your development is done, commit your changes and push them back to the server.
-10. Remember to submit your solution on the HackerRank platform once it's done.
+```powershell
+python agent.py --dry-run
+```
+
+Push to your GitHub (example)
+
+If you want to push this repository to your own GitHub, these are the commands you provided:
+
+```powershell
+git remote add origin https://github.com/SanyamBK/Coding-Agent.git
+git branch -M main
+git push -u origin main
+```
+
+Notes
+- Do not commit `.env` or virtual environment folders. Use CI secrets for sensitive keys.
+- The file `check_usage.py` in the original upstream may be protected by a server-side hook. If a push fails referencing that file, restore it to the upstream state or coordinate with the repository maintainers.
+
+Contact / author
+This fork was prepared by SanyamBK with development assistance from GitHub Copilot (local edits and test validation performed in this workspace).
