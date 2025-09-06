@@ -3,6 +3,7 @@ import click
 import pytest
 import os
 import json
+import datetime
 from app import create_app, db
 from app.models import Event
 

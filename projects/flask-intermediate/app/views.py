@@ -28,14 +28,34 @@ def register_user():
 @user_blueprint.route('/token/', methods=['POST'])
 def login():
     """Authenticate user and return access and refresh tokens."""
-    pass
+#    Expect JSON: {"username": "...", "password": "..."}
+    data = request.get_json() or {}
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'detail': 'Invalid username or password'}), 401
+
+    user = CustomUser.query.filter_by(username=username).first()
+    if not user or not user.check_password(password):
+        return jsonify({'detail': 'Invalid username or password'}), 401
+
+    access = create_access_token(identity=user.username)
+    refresh = create_refresh_token(identity=user.username)
+    return jsonify({'refresh': refresh, 'access': access}), 200
 # Your code
 
 @user_blueprint.route('/list/', methods=['GET'])
 # Implement authorization
 def list_users():
     """Return all user records for authenticated users."""
-    pass
+    # Require a valid JWT; flask-jwt-extended will handle missing/invalid tokens
+    @jwt_required()
+    def _inner():
+        users = CustomUser.query.all()
+        return jsonify([{'username': u.username} for u in users]), 200
+
+    return _inner()
 # Your code
 
 

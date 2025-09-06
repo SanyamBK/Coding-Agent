@@ -17,6 +17,19 @@ def create_app(config_name='default'):
     app.register_blueprint(event_blueprint)
 
     app.cli.add_command(init_db_command)
+    # Add a `flask test` command that runs pytest
+    @click.command("test")
+    @with_appcontext
+    def run_tests():
+        """Run the test suite using pytest."""
+        import pytest
+        # run pytest in the package tests folder
+        rv = pytest.main(["-v", "tests"]) 
+        # pytest.main returns exit code-like; propagate as needed
+        if rv != 0:
+            raise SystemExit(rv)
+
+    app.cli.add_command(run_tests)
 
     return app
 
