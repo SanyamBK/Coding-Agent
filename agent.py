@@ -1,6 +1,5 @@
 import os
 import sys
-from dotenv import load_dotenv
 
 
 # Try to import the optional langchain client. If it's not available,
@@ -85,8 +84,6 @@ class CodingAgent:
 
 if __name__ == "__main__":
     import argparse
-
-    load_dotenv()
 
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("--dry-run", action="store_true", help="Run without OpenAI credentials for demo/testing")
