@@ -1,21 +1,29 @@
 
 # Mini Coding Agent
 
-This repository contains a small, test-driven coding agent plus three example Flask projects used for development, learning, and validation.
+This repository was created for the "Build Your Own Coding Agent" hackathon, organized by HackerRank, which took place from 5 September 2025 at 05:30 IST to 8 September 2025 at 05:30 IST.
 
 ## Overview
 
- The agent's role is to discover the subprojects under `projects/`, run their test suites, and—when necessary—apply small, well-scoped fixes to make the tests pass. The repository includes the source code, tests, and a short implementation report in `docs/`.
+This project is intended as a practical developer tool and lab: it demonstrates an automated, test-driven workflow where a small agent inspects subprojects under `projects/`, runs their tests, and reports actions taken. Key points:
 
-This README is focused on how to run and validate the projects; it does not contain assignment or implementation prompts.
+- Design intent: keep fixes minimal and focused — the agent performs small, deterministic edits (e.g., bugfixes, missing return values, simple refactors) so test behavior changes are easy to review.
+- Validation model: every change is validated by running the affected project's test suite; results are reported as JSON summaries and human-readable logs.
+- Extensibility: agent logic is intentionally modular — add new project detectors, test runners, or language handlers by implementing small adapters under the top-level agent module.
+- Safety and reproducibility: the agent avoids committing secrets, writes no persistent side effects outside project directories, and can run in dry-run mode to preview planned edits.
+- Usage notes: configure required environment variables (no .env assumed), run `python tests.py` to run all projects' tests, and use `python agent.py --dry-run` to preview actions before applying them.
 
-This repository contains a small, test-driven coding agent and three example Flask projects used for development and validation.
 
-Contents
-- `agent.py` — lightweight agent to discover projects and run tests.
-- `tests.py` — top-level test runner that aggregates project tests.
-- `projects/` — three example Flask apps: `flask-easy`, `flask-intermediate`, `flask-hard`.
-- `docs/report.tex` and `docs/report.pdf` — implementation summary and artifacts.
+Supported projects:
+- flask-easy — basic event ticketing example
+- flask-intermediate — JWT authentication example
+- flask-hard — log processing and notification example
+
+Primary workflows:
+- Run all tests: `python tests.py`
+- Run the agent in dry-run mode: `python agent.py --dry-run`
+- Run a single project tests: see `projects/<project>/README.md`
+
 
 ## High Level Structure
 
@@ -26,65 +34,38 @@ mini-coding-agent/
 ├── check_usage.py (for checking LLM resource utilisation)
 ├── projects
         ├── project_1
-                # Mini Coding Agent
+                ├── app/
+                ├── README.md
+        ├── project_2
+                ├── app/
+                ├── README.md
+└── requirements.txt
+```
 
-                Purpose
-                -------
-                A compact, test-driven example showing an automated coding agent that discovers subprojects, runs tests, and applies small, targeted fixes where required. The repository contains three sample Flask projects and tooling used during development.
+## How to run (local)
+1. Create and activate a virtual environment (recommended):
 
-                Repository layout
-                -----------------
-                - `agent.py` — discovery driver and lightweight agent (supports `--dry-run`).
-                - `tests.py` — top-level test runner that aggregates individual project tests.
-                - `projects/` — example applications:
-                        - `flask-easy` — simple REST endpoints and model tests.
-                        - `flask-intermediate` — JWT authentication and protected routes.
-                        - `flask-hard` — log ingestion, Pydantic models, threaded processing, metrics.
-                - `docs/` — implementation summary (`report.tex` and `report.pdf`).
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-                Quick start (local)
-                -------------------
-                1. Create and activate a virtual environment (PowerShell):
+2. Install dependencies:
 
-                ```powershell
-                python -m venv .venv
-                .\.venv\Scripts\Activate.ps1
-                ```
+```powershell
+pip install -r requirements.txt
+```
 
-                2. Install dependencies:
+3. Run all tests (top-level):
 
-                ```powershell
-                pip install -r requirements.txt
-                ```
+```powershell
+python tests.py
+```
 
-                3. Run all tests (top-level):
+4. Run the agent in dry-run to see planned actions:
 
-                ```powershell
-                python tests.py
-                ```
-
-                4. Run a single project's tests (example):
-
-                ```powershell
-                cd projects\flask-hard
-                pytest -q
-                ```
-
-                5. Preview agent actions without making changes:
-
-                ```powershell
-                python agent.py --dry-run
-                ```
-
-                Notes
-                -----
-                - Avoid committing `.env` or virtual environment folders. Add them to `.gitignore`.
-                - The upstream may enforce server-side hooks that protect specific files (e.g., `check_usage.py`). If a push is rejected referencing a protected file, restore the file from upstream or coordinate with maintainers.
-
-                Attribution
-                -----------
-                Prepared by SanyamBK with development assistance from GitHub Copilot (local edits and validation performed in this workspace).
-
-                If you'd like this README tailored (shorter, PR-ready, or maintainer-focused), tell me the target and I'll produce a variant.
+```powershell
+python agent.py --dry-run
+```
 
 

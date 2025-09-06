@@ -1,2 +1,5 @@
 .env
 venv/
+docs/*.aux
+docs/*.log
+docs/*.out
